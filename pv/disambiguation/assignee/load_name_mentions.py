@@ -14,9 +14,10 @@ class Loader(object):
 
     @staticmethod
     def from_config(config):
-        end_date = config["DATES"]["END_DATE"]
-        path = f"{config['BASE_PATH']['assignee']}".format(end_date=end_date) + config['BUILD_ASSIGNEE_NAME_MENTIONS'][
-            'feature_out']
+        # end_date = config["DATES"]["END_DATE"]
+        # path = f"{config['BASE_PATH']['assignee']}".format(end_date=end_date) + config['BUILD_ASSIGNEE_NAME_MENTIONS'][
+        #     'feature_out']
+        path = config['BASE_PATH']['assignee'] + '/' + 'assignee'
         with open(path + '.%s.pkl' % 'canopies', 'rb') as fin:
             canopies = pickle.load(fin)
         with open(path + '.%s.pkl' % 'records', 'rb') as fin:

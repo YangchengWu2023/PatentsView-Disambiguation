@@ -55,7 +55,7 @@ def char_wb_ngram_with_lower_priority_exclusion(text_document, ngram_range, whit
 
 def analyze_assignee_name(assignee_name, *args, **kwargs):
     N_GRAM_RANGE = (2, 10)
-    path = "/project/clustering_resources/"
+    path = "/home/aeolus/WorkSpace/PatentsView-Disambiguation/clustering_resources/"
     assignee_abbreviation_file = path + "assignee_abbreviations.json"
     assignee_correction_file = path + "assignee_corrections.txt"
     assignee_stopphrase_file = path + "assignee_stopwords.txt"

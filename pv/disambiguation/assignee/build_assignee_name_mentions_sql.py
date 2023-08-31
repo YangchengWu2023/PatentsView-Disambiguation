@@ -64,18 +64,20 @@ def main(argv):
     config = configparser.ConfigParser()
     config.read(['config/database_config.ini', 'config/database_tables.ini',
                  'config/assignee/build_name_mentions_sql.ini'])
-
-    feats = [n for n in map(run, [('granted',config), ('pregranted',config)])]
-    # feats = [run('granted')]
+    # feats = [n for n in map(run, [('granted',config), ('pregranted',config)])]
+    # feats = [n for n in ]
+    feats = [run(['granted', config])]
     logging.info('finished loading mentions %s', len(feats))
-    name_mentions = set(feats[0].keys()).union(set(feats[1].keys()))
+    # name_mentions = set(feats[0].keys()).union(set(feats[1].keys()))
+    name_mentions = set(feats[0].keys())
     logging.info('number of name mentions %s', len(name_mentions))
     from tqdm import tqdm
     records = dict()
     from collections import defaultdict
     canopies = defaultdict(set)
     for nm in tqdm(name_mentions, 'name_mentions'):
-        anm = AssigneeNameMention.from_assignee_mentions(nm, feats[0][nm] + feats[1][nm])
+        # anm = AssigneeNameMention.from_assignee_mentions(nm, feats[0][nm] + feats[1][nm])
+        anm = AssigneeNameMention.from_assignee_mentions(nm, feats[0][nm])
         for c in anm.canopies:
             canopies[c].add(anm.uuid)
         records[anm.uuid] = anm

@@ -3,7 +3,7 @@ method: grid
 project: assignee_disambiguation
 parameters:
   chunk_id:
-    values: [0,1,2,3,4]
+    values: [0]
   chunk_size:
     value: 10000
   run_id:

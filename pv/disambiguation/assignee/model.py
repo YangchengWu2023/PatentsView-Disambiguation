@@ -105,6 +105,13 @@ class CustomSKLearnVectorizerFeatures(object):
         from pv.disambiguation.assignee.assignee_analyzer import analyze_assignee_name
 
         logging.log_first_n(logging.INFO, 'len(things_to_encode) = %s, %s', 10, len(things_to_encode),', '.join([str(self.get_field(x)) for x in things_to_encode[:5]]))
+        # ## test
+        # grams = []
+        # for x in things_to_encode:
+        #     grams.extend(analyze_assignee_name(self.get_field(x)))
+        # grams = set(grams)
+        # return self.model.transform(grams)
+        # ori
         return self.model.transform([analyze_assignee_name(self.get_field(x)) for x in things_to_encode])
 
 class LocationVectorizerFeatures(object):
@@ -119,6 +126,7 @@ class LocationVectorizerFeatures(object):
     def encode(self, things_to_encode):
         a = [self.get_field(x) for x in things_to_encode]
         newlist = [list(x) for x in a]
+        newlist.append('a')
         a = self.model.fit_transform(newlist).toarray()
         return self.model.fit_transform(newlist)
 
