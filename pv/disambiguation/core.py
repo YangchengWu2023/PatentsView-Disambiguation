@@ -346,20 +346,24 @@ class AssigneeMention(object):
                                rawlast, organization, sequence, city, state, country, doc_no)
 
     @staticmethod
-    def from_granted_sql_record(rec):
-        # | uuid | patent_id | assignee_id | rawlocation_id | type | name_first | name_last | organization | sequence |
-        # | uuid | patent_id | assignee_id | rawlocation_id | type | name_first | name_last | organization | sequence |
-        uuid = rec[0]
-        patent_id = rec[1]
-        assignee_id = rec[2]
-        rawlocation_id = rec[3]
-        assignee_type = rec[4]
-        rawfirst = rec[5]
-        rawlast = rec[6]
-        organization = rec[7]
-        sequence = rec[8]
-        return AssigneeMention(uuid, patent_id, rawlocation_id, assignee_type, rawfirst,
-                               rawlast, organization, sequence)
+    def from_sql_record(rec):
+
+
+    # @staticmethod
+    # def from_granted_sql_record(rec):
+    #     # | uuid | patent_id | assignee_id | rawlocation_id | type | name_first | name_last | organization | sequence |
+    #     # | uuid | patent_id | assignee_id | rawlocation_id | type | name_first | name_last | organization | sequence |
+    #     uuid = rec[0]
+    #     patent_id = rec[1]
+    #     assignee_id = rec[2]
+    #     rawlocation_id = rec[3]
+    #     assignee_type = rec[4]
+    #     rawfirst = rec[5]
+    #     rawlast = rec[6]
+    #     organization = rec[7]
+    #     sequence = rec[8]
+    #     return AssigneeMention(uuid, patent_id, rawlocation_id, assignee_type, rawfirst,
+    #                            rawlast, organization, sequence)
 
 
 class AssigneeNameMention(object):

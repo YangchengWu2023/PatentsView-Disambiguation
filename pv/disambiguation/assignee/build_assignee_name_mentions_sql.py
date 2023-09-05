@@ -12,50 +12,33 @@ import pv.disambiguation.util.db as pvdb
 
 import os
 
-
-def last_name(im):
-    return im.last_name()[0] if len(im.last_name()) > 0 else im.uuid
-
-
-def build_pregrants(config):
-    # | id | document_number | sequence | name_first | name_last | organization | type | rawlocation_id | city | state | country | filename | created_date | updated_date |
-    cnx = pvdb.pregranted_table(config)
-    cursor = cnx.cursor()
-    query = "SELECT id, document_number, sequence -1 as sequence, name_first, name_last, organization, type, rawlocation_id, city, state, country FROM rawassignee"
-    cursor.execute(query)
-    feature_map = collections.defaultdict(list)
-    idx = 0
-    for rec in cursor:
-        am = AssigneeMention.from_application_sql_record(rec)
-        feature_map[am.name_features()[0]].append(am)
-        idx += 1
-        logging.log_every_n(logging.INFO, 'Processed %s pregrant records - %s features', 10000, idx, len(feature_map))
-    return feature_map
-
-
 def build_granted(config):
     # | uuid | patent_id | assignee_id | rawlocation_id | type | name_first | name_last | organization | sequence |
     cnx = pvdb.granted_table(config)
     cursor = cnx.cursor()
-    query = "SELECT uuid , patent_id , assignee_id , rawlocation_id , type , name_first , name_last , organization , sequence FROM rawassignee;"
+    query = 'SELECT {cols} FROM {table}'.format(
+        cols=config['ETC']['sql_cols'], 
+        table=config['ETC']['table']
+    )
     cursor.execute(query)
+
+    tot_cols = [i.strip() for i in config['ETC']['sql_cols'].split(',')]
+    location_cols = None
+    if 'locations'in config['ETC']:
+        location_cols = [i.strip() for i in config['ETC']['locations'].split(',')]
+        loc2tot_indices = [tot_cols.index(i) for i in location_cols]
+    # 'uuid, patent_id, orgname, city_name, state_name, country_code, postal_code, address'
+    disambiguated_index = tot_cols.index(config['ETC']['disambiguated_col'])
     feature_map = collections.defaultdict(list)
-    idx = 0
-    for rec in cursor:
-        am = AssigneeMention.from_granted_sql_record(rec)
+
+    for idx, rec in enumerate(cursor):
+        uuid, patent_id = rec[0], rec[1]
+        orgname = rec[disambiguated_index]
+        location = [rec[ind] for ind in loc2tot_indices]
+        am = AssigneeMention(uuid, patent_id, None, None, None, None, orgname, '0', location_id=location)
         feature_map[am.name_features()[0]].append(am)
-        idx += 1
         logging.log_every_n(logging.INFO, 'Processed %s granted records - %s features', 10000, idx, len(feature_map))
     return feature_map
-
-
-def run(args):
-    source, config = args[0], args[1]
-    if source == 'pregranted':
-        features = build_pregrants(config)
-    elif source == 'granted':
-        features = build_granted(config)
-    return features
 
 
 def main(argv):
@@ -64,9 +47,7 @@ def main(argv):
     config = configparser.ConfigParser()
     config.read(['config/database_config.ini', 'config/database_tables.ini',
                  'config/consolidated_config_adhoc.ini'])
-    # feats = [n for n in map(run, [('granted',config), ('pregranted',config)])]
-    # feats = [n for n in ]
-    feats = [run(['granted', config])]
+    feats = build_granted(config)
     logging.info('finished loading mentions %s', len(feats))
     # name_mentions = set(feats[0].keys()).union(set(feats[1].keys()))
     name_mentions = set(feats[0].keys())
@@ -76,15 +57,14 @@ def main(argv):
     from collections import defaultdict
     canopies = defaultdict(set)
     for nm in tqdm(name_mentions, 'name_mentions'):
-        # anm = AssigneeNameMention.from_assignee_mentions(nm, feats[0][nm] + feats[1][nm])
-        anm = AssigneeNameMention.from_assignee_mentions(nm, feats[0][nm])
+        anm = AssigneeNameMention.from_assignee_mentions(nm, feats[nm])
         for c in anm.canopies:
             canopies[c].add(anm.uuid)
         records[anm.uuid] = anm
-
-    with open(config['BUILD_ASSIGNEE_NAME_MENTIONS']['feature_out'] + '.%s.pkl' % 'records', 'wb') as fout:
+    os.makedirs(config['BASE_PATH']['assignee'])
+    with open(config['BASE_PATH']['assignee'] + 'assignee.%s.pkl' % 'records', 'wb') as fout:
         pickle.dump(records, fout)
-    with open(config['BUILD_ASSIGNEE_NAME_MENTIONS']['feature_out'] + '.%s.pkl' % 'canopies', 'wb') as fout:
+    with open(config['BASE_PATH']['assignee'] + 'assignee.%s.pkl' % 'canopies', 'wb') as fout:
         pickle.dump(canopies, fout)
 
 
