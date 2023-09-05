@@ -4,7 +4,7 @@
 # or you could download it by choosing "g_assignee_not_disambiguated" under https://patentsview.org/download/data-download-tables
 PASSWORD=aeolus
 
-filepath=/home/aeolus/Shared/patentsview/patentsview_basic_public_2023/data/g_assignee_not_disambiguated.tsv
+filepath=/home/ubuntu/workspace/PatentsView-Disambiguation/resources/g_assignee_not_disambiguated.tsv
 database_name=granted
 tab_name=tmp_$(basename $filepath | sed "s#\.tsv##g")
 create_sql=$(. ./gen_tab_by_tsv.sh $filepath $database_name $tab_name)
@@ -14,18 +14,19 @@ FIELDS TERMINATED BY '\t'
 IGNORE 1 ROWS;
 "
 
-# mysql --connect-expired-password -u root -p"$PASSWORD" <<EOF
-# $create_sql;
-# $load_sql
-# quit
-# EOF
+# LOAD may failed, see this: https://stackoverflow.com/a/65548915
+mysql --local-infile=1 --connect-expired-password -u root -p"$PASSWORD" <<EOF
+$create_sql;
+$load_sql
+quit
+EOF
 
 ## Note: The following step need to be modified manually
 target_table=rawassignee
 # | uuid | patent_id | assignee_id | rawlocation_id | type | name_first | name_last | organization | sequence |
 create_target_sql="
 CREATE TABLE $database_name.$target_table(
-    uuid BIGINT,
+    uuid VARCHAR(30),
     patent_id VARCHAR(40),
     assignee_id VARCHAR(40),
     rawlocation_id VARCHAR(40),

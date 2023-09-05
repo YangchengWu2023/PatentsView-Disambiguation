@@ -10,7 +10,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
  
 mycursor.execute("USE granted")
-mycursor.execute("SELECT organization FROM granted.rawassignee;")
+mycursor.execute("SELECT orgname FROM granted.onscope;")
 
 corpus = []
 for i in mycursor:
@@ -21,7 +21,7 @@ vectorizer = TfidfVectorizer()
 X = vectorizer.fit(corpus)
 # import pdb
 # pdb.set_trace()
-# import dill as dpickle
-# dpickle.dump(X, open('./assignee_name_vectorizer.pkl', 'wb'))
-# mycursor.close()
-# mydb.close()
+import dill as dpickle
+dpickle.dump(X, open('./on_scope_assignee_name_vectorizer_3m.pkl', 'wb'))
+mycursor.close()
+mydb.close()

@@ -111,8 +111,10 @@ class CustomSKLearnVectorizerFeatures(object):
         #     grams.extend(analyze_assignee_name(self.get_field(x)))
         # grams = set(grams)
         # return self.model.transform(grams)
-        # ori
-        return self.model.transform([analyze_assignee_name(self.get_field(x)) for x in things_to_encode])
+        ## TODO: mend the gap between bag attribute and tfidf
+        ## ori, but it can not be used with tfidf vectorizer directly
+        # return self.model.transform([analyze_assignee_name(self.get_field(x)) for x in things_to_encode])
+        return self.model.transform([self.get_field(x) for x in things_to_encode])
 
 class LocationVectorizerFeatures(object):
     """Features for hashing vectorizer."""
@@ -126,7 +128,6 @@ class LocationVectorizerFeatures(object):
     def encode(self, things_to_encode):
         a = [self.get_field(x) for x in things_to_encode]
         newlist = [list(x) for x in a]
-        newlist.append('a')
         a = self.model.fit_transform(newlist).toarray()
         return self.model.fit_transform(newlist)
 
@@ -163,9 +164,10 @@ class AssigneeModel(object):
         latlong_vectorizer = LocationVectorizer('location_lat_long',
                                                 lambda x: np.array([x.average_lat, x.average_lon]))
         triples = [
-            (locations, FeatCalc.DOT, CentroidType.NORMED, False, False),
+            # (locations, FeatCalc.DOT, CentroidType.NORMED, False, False),
             # (entity_kb_feat, FeatCalc.NO_MATCH, CentroidType.BINARY, False, True),
-            (name_tfidf, FeatCalc.DOT, CentroidType.NORMED, False, False)]
+            (name_tfidf, FeatCalc.DOT, CentroidType.NORMED, False, False)
+            ]
         encoders = [t[0] for t in triples]
         feature_types = [t[1] for t in triples]
         centroid_types = [t[2] for t in triples]

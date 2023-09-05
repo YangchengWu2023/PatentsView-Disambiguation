@@ -63,7 +63,7 @@ def main(argv):
 
     config = configparser.ConfigParser()
     config.read(['config/database_config.ini', 'config/database_tables.ini',
-                 'config/assignee/build_name_mentions_sql.ini'])
+                 'config/consolidated_config_adhoc.ini'])
     # feats = [n for n in map(run, [('granted',config), ('pregranted',config)])]
     # feats = [n for n in ]
     feats = [run(['granted', config])]

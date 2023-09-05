@@ -149,6 +149,8 @@ class Agglom(object):
         st_sims = time.time()
         sims = self.csim_multi_feature_knn_batched(np.arange(self.num_points), np.arange(self.num_points))
         self.sims = sims
+        import pdb
+        pdb.set_trace()
         en_sims = time.time()
         logging.info('Time to compute sims: %s', en_sims - st_sims)
         logging.info('Finished batched similarities!')

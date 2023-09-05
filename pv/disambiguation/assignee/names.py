@@ -77,9 +77,9 @@ class AssigneePreprocessor:
 
 def get_assignee_preprocessor():
     assignee_preprocessor = AssigneePreprocessor(
-    assignee_abbreviation_file='/home/aeolus/WorkSpace/PatentsView-Disambiguation/clustering_resources/assignee_abbreviations.json',
-    assignee_correction_file='/home/aeolus/WorkSpace/PatentsView-Disambiguation/clustering_resources/assignee_corrections.txt',
-    assignee_stopphrase_file='/home/aeolus/WorkSpace/PatentsView-Disambiguation/clustering_resources/assignee_stopwords.txt', threshold=2)
+    assignee_abbreviation_file='/home/ubuntu/workspace/PatentsView-Disambiguation/clustering_resources/assignee_abbreviations.json',
+    assignee_correction_file='/home/ubuntu/workspace/PatentsView-Disambiguation/clustering_resources/assignee_corrections.txt',
+    assignee_stopphrase_file='/home/ubuntu/workspace/PatentsView-Disambiguation/clustering_resources/assignee_stopwords.txt', threshold=2)
     return assignee_preprocessor
 
 
@@ -104,7 +104,7 @@ def normalize_name(name, *args, **kwargs):
 
 def load_assignee_stopwords():
     r = set()
-    with open('/home/aeolus/WorkSpace/PatentsView-Disambiguation/clustering_resources/assignee-stopwords-lowercase.txt') as fin:
+    with open('/home/ubuntu/workspace/PatentsView-Disambiguation/clustering_resources/assignee-stopwords-lowercase.txt') as fin:
         for line in fin:
             r.add(line.strip())
     r = set()
